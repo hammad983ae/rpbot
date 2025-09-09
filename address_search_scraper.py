@@ -781,6 +781,38 @@ def search_and_scrape_property_by_address(address):
         logger.info("⏳ Waiting for results page to load...")
         time.sleep(8)
         
+        # Step 5.5: Check for "Results for '{address}'" message indicating incomplete address
+        logger.info("🔍 Checking for incomplete address indicators...")
+        try:
+            # Look for the "Results for" message in various possible locations
+            results_indicators = [
+                "//h4[contains(text(), 'Results for')]",
+                "//div[contains(text(), 'Results for')]",
+                "//*[contains(text(), 'Results for')]",
+                "//h4[contains(@title, 'Results for')]"
+            ]
+            
+            for indicator in results_indicators:
+                try:
+                    result_element = driver.find_element(By.XPATH, indicator)
+                    if result_element and result_element.is_displayed():
+                        result_text = result_element.text or result_element.get_attribute('title') or ""
+                        if "Results for" in result_text:
+                            logger.warning(f"⚠️ Found 'Results for' indicator: {result_text}")
+                            driver.quit()
+                            return {
+                                'success': False,
+                                'message': 'Please write complete and accurate address',
+                                'data': None
+                            }
+                except NoSuchElementException:
+                    continue
+                    
+            logger.info("✅ No 'Results for' indicators found - proceeding with extraction")
+        except Exception as e:
+            logger.warning(f"⚠️ Error checking for 'Results for' indicators: {e}")
+            # Continue with extraction even if check fails
+        
         # Step 6: Extract property data
         current_url = driver.current_url
         logger.info(f"Current URL after search: {current_url}")
