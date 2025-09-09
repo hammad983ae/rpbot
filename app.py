@@ -24,6 +24,24 @@ def get_db_connection():
         logger.error(f"Database connection error: {e}")
         return None
 
+@app.route('/', methods=['GET'])
+def home():
+    """Root endpoint providing API information."""
+    return jsonify({
+        'message': 'Property Scraping API',
+        'version': '1.0.0',
+        'endpoints': {
+            'POST /scrape-property': 'Scrape property data by address'
+        },
+        'usage': {
+            'method': 'POST',
+            'endpoint': '/scrape-property',
+            'body': {
+                'address': 'Property address to scrape'
+            }
+        }
+    }), 200
+
 @app.route('/scrape-property', methods=['POST'])
 def scrape_property():
     """Main endpoint to scrape property data by address."""
