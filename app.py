@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import os
 import psycopg2
@@ -11,7 +11,7 @@ from address_search_scraper import search_and_scrape_property_by_address
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates', static_folder='static')
 CORS(app)
 
 # Database connection
@@ -26,7 +26,12 @@ def get_db_connection():
 
 @app.route('/', methods=['GET'])
 def home():
-    """Root endpoint providing API information."""
+    """Serve the main frontend page."""
+    return render_template('index.html')
+
+@app.route('/api', methods=['GET'])
+def api_info():
+    """API information endpoint."""
     return jsonify({
         'message': 'Property Scraping API',
         'version': '1.0.0',
