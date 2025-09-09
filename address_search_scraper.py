@@ -855,38 +855,38 @@ def search_and_scrape_property_by_address(address):
         'data': None
     }
 
-# Example usage
-if __name__ == "__main__":
-    import sys
+# # Example usage
+# if __name__ == "__main__":
+#     import sys
     
-    # Check if address is provided as command line argument
-    if len(sys.argv) > 1:
-        address = sys.argv[1]
-    else:
-        address = "200 George Street Sydney NSW 2000"  # Default test address
+#     # Check if address is provided as command line argument
+#     if len(sys.argv) > 1:
+#         address = sys.argv[1]
+#     else:
+#         address = "200 George Street Sydney NSW 2000"  # Default test address
     
-    # Test database connection first
-    connection = get_db_connection()
-    if connection:
-        logger.info("✅ Database connection successful")
-        connection.close()
+#     # Test database connection first
+#     connection = get_db_connection()
+#     if connection:
+#         logger.info("✅ Database connection successful")
+#         connection.close()
         
-        # Search for the address
-        result = search_and_scrape_property_by_address(address)
+#         # Search for the address
+#         result = search_and_scrape_property_by_address(address)
         
-        # Print JSON result
-        print(json.dumps(result, indent=2))
+#         # Print JSON result
+#         print(json.dumps(result, indent=2))
         
-        if result['success']:
-            logger.info("✅ Address search completed successfully")
-        else:
-            logger.error("❌ Address search failed")
+#         if result['success']:
+#             logger.info("✅ Address search completed successfully")
+#         else:
+#             logger.error("❌ Address search failed")
         
-    else:
-        logger.error("❌ Database connection failed. Please check your configuration.")
-        print(json.dumps({
-            'success': False,
-            'message': 'Database connection failed',
-            'data': None
-        }, indent=2))
+#     else:
+#         logger.error("❌ Database connection failed. Please check your configuration.")
+#         print(json.dumps({
+#             'success': False,
+#             'message': 'Database connection failed',
+#             'data': None
+#         }, indent=2))
 
