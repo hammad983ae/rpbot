@@ -9,6 +9,8 @@
 -- =============================================
 -- ENUM TYPES
 -- =============================================
+-- Enable trigram similarity for fuzzy address matching
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
 CREATE TYPE catchment_enum AS ENUM ('In Catchment', 'All Nearby');
 CREATE TYPE estimate_enum AS ENUM ('Property Valuation', 'Rental Estimate');
 CREATE TYPE history_enum AS ENUM ('All', 'Sale', 'Listing', 'Rental', 'DA');
@@ -35,6 +37,8 @@ CREATE TABLE IF NOT EXISTS properties (
 CREATE INDEX idx_address ON properties(address);
 CREATE INDEX idx_property_type ON properties(property_type);
 CREATE INDEX idx_scraping_date ON properties(scraping_date);
+-- Trigram index to accelerate similarity() and % operator on address
+CREATE INDEX IF NOT EXISTS idx_properties_address_trgm ON properties USING gin (address gin_trgm_ops);
 
 -- =============================================
 -- SALE & RENTAL INFORMATION
@@ -92,22 +96,7 @@ CREATE TABLE IF NOT EXISTS additional_info (
     FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE CASCADE
 );
 
--- =============================================
--- NATURAL RISKS
--- =============================================
-CREATE TABLE IF NOT EXISTS natural_risks (
-    id SERIAL PRIMARY KEY,
-    property_id INT NOT NULL,
-    risk_type VARCHAR(100) NOT NULL,
-    risk_status VARCHAR(100) NOT NULL,
-    risk_description TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE CASCADE
-);
-
-CREATE INDEX idx_risk_type ON natural_risks(risk_type);
-CREATE INDEX idx_risk_status ON natural_risks(risk_status);
+-- Natural risks feature removed
 
 -- =============================================
 -- NEARBY SCHOOLS
@@ -237,12 +226,7 @@ SELECT
     ai.property_features,
     ai.land_values,
 
-    -- Natural Risks Summary
-    (
-        SELECT string_agg(nr.risk_type || ': ' || nr.risk_status, ', ')
-        FROM natural_risks nr
-        WHERE nr.property_id = p.id
-    ) AS natural_risks_summary,
+    -- Natural risks summary removed
 
     -- Schools Count
     (SELECT COUNT(*) FROM nearby_schools ns WHERE ns.property_id = p.id AND ns.catchment_status = 'In Catchment') as schools_in_catchment_count,
@@ -266,6 +250,21 @@ LEFT JOIN additional_info ai ON p.id = ai.property_id;
 -- =============================================
 -- FUNCTIONS
 -- =============================================
+-- Returns the most similar property to the provided address using trigram similarity
+CREATE OR REPLACE FUNCTION GetMostSimilarProperty(address_query TEXT, min_sim NUMERIC DEFAULT 0.0)
+RETURNS TABLE (
+    id INT,
+    property_url VARCHAR,
+    address VARCHAR,
+    similarity NUMERIC
+)
+LANGUAGE sql AS $$
+    SELECT p.id, p.property_url, p.address, similarity(p.address, address_query) AS similarity
+    FROM properties p
+    WHERE similarity(p.address, address_query) >= min_sim
+    ORDER BY similarity DESC
+    LIMIT 1
+$$;
 CREATE OR REPLACE FUNCTION GetPropertyComplete(property_url_param VARCHAR)
 RETURNS SETOF property_complete_view
 LANGUAGE plpgsql AS $$

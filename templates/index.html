@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Data Scraper</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-home"></i>
+                    <h1>Property Data Scraper</h1>
+                </div>
+                <p class="subtitle">Get comprehensive property information instantly</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Search Section -->
+            <section class="search-section">
+                <div class="search-container">
+                    <div class="search-card">
+                        <h2>Search Property Data</h2>
+                        <p>Enter a property address to get detailed information including valuation, history, and nearby amenities.</p>
+                        
+                        <form id="searchForm" class="search-form">
+                            <div class="input-group">
+                                <div class="input-wrapper">
+                                    <i class="fas fa-map-marker-alt input-icon"></i>
+                                    <input 
+                                        type="text" 
+                                        id="addressInput" 
+                                        placeholder="Enter property address (e.g., 1 Macquarie Street Sydney NSW 2000)"
+                                        required
+                                    >
+                                </div>
+                                <button type="submit" class="search-btn" id="searchBtn">
+                                    <i class="fas fa-search"></i>
+                                    <span>Search Property</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Loading Section -->
+            <section class="loading-section" id="loadingSection" style="display: none;">
+                <div class="loading-container">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                    </div>
+                    <h3>Searching Property Data...</h3>
+                    <p>This may take a few moments while we gather comprehensive information.</p>
+                    <div class="loading-steps">
+                        <div class="step active" id="step1">
+                            <i class="fas fa-search"></i>
+                            <span>Searching property</span>
+                        </div>
+                        <div class="step" id="step2">
+                            <i class="fas fa-database"></i>
+                            <span>Extracting data</span>
+                        </div>
+                        <div class="step" id="step3">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Analyzing information</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section" id="resultsSection" style="display: none;">
+                <div class="results-container">
+                    <!-- Property Overview -->
+                    <div class="property-overview" id="propertyOverview">
+                        <!-- Content will be populated by JavaScript -->
+                    </div>
+
+                    <!-- Property Details Tabs -->
+                    <div class="property-details">
+                        <div class="tabs">
+                            <button class="tab-btn active" data-tab="basic">
+                                <i class="fas fa-info-circle"></i>
+                                Basic Info
+                            </button>
+                            <button class="tab-btn" data-tab="valuation">
+                                <i class="fas fa-chart-line"></i>
+                                Valuation
+                            </button>
+                            <button class="tab-btn" data-tab="history">
+                                <i class="fas fa-history"></i>
+                                History
+                            </button>
+                            <button class="tab-btn" data-tab="schools">
+                                <i class="fas fa-school"></i>
+                                Schools
+                            </button>
+                            <button class="tab-btn" data-tab="additional">
+                                <i class="fas fa-plus-circle"></i>
+                                Additional
+                            </button>
+                        </div>
+
+                        <div class="tab-content">
+                            <!-- Basic Info Tab -->
+                            <div class="tab-panel active" id="basic">
+                                <div class="info-grid" id="basicInfo">
+                                    <!-- Content will be populated by JavaScript -->
+                                </div>
+                            </div>
+
+                            <!-- Valuation Tab -->
+                            <div class="tab-panel" id="valuation">
+                                <div class="valuation-content" id="valuationInfo">
+                                    <!-- Content will be populated by JavaScript -->
+                                </div>
+                            </div>
+
+                            <!-- History Tab -->
+                            <div class="tab-panel" id="history">
+                                <div class="history-content" id="historyInfo">
+                                    <!-- Content will be populated by JavaScript -->
+                                </div>
+                            </div>
+
+                            <!-- Schools Tab -->
+                            <div class="tab-panel" id="schools">
+                                <div class="schools-content" id="schoolsInfo">
+                                    <!-- Content will be populated by JavaScript -->
+                                </div>
+                            </div>
+
+                            <!-- Additional Tab -->
+                            <div class="tab-panel" id="additional">
+                                <div class="additional-content" id="additionalInfo">
+                                    <!-- Content will be populated by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Error Section -->
+            <section class="error-section" id="errorSection" style="display: none;">
+                <div class="error-container">
+                    <div class="error-card">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Search Failed</h3>
+                        <p id="errorMessage">An error occurred while searching for the property.</p>
+                        <button class="retry-btn" onclick="hideError()">
+                            <i class="fas fa-redo"></i>
+                            Try Again
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <p>&copy; 2024 Property Data Scraper. Powered by advanced web scraping technology.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
